@@ -1,4 +1,8 @@
-import { addRoommateQuery, getRoommatesQuery, recalcularGastos } from "../queries/roommatesConsultas.js";
+import {
+  addRoommateQuery,
+  getRoommatesQuery,
+  recalcularDeudas,
+} from "../queries/roommatesConsultas.js";
 import path from 'path'
 
 const __dirname = import.meta.dirname
@@ -14,8 +18,8 @@ const home = (req, res) => {
 const addRoommates = async(req, res) => {
     try {
         await addRoommateQuery()
-        await recalcularGastos()
-        res.send("Roommate agregado")
+        recalcularDeudas();
+        res.redirect('/')
     } catch (error) {
         
     }

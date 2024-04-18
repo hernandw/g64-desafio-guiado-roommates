@@ -1,9 +1,18 @@
-import express from 'express';
-import { getGastos, addGasto } from '../controller/gastosController.js'
+import express from "express";
+import {
+  getGastos,
+  addGasto,
+  deleteGasto,
+  editGasto
+} from "../controller/gastosController.js";
 const router = express.Router();
 
-router.get('/gastos',  getGastos)
+router.get("/gastos", getGastos);
 
-router.post('/gasto', addGasto)
+router.post("/gasto", addGasto);
 
-export default router
+router.delete("/gasto", deleteGasto);
+
+router.put("/gasto", editGasto);
+
+export default router;

@@ -40,51 +40,105 @@ const getRoommatesQuery = async (req, res) => {
 };
 
 //se encarga de recalcular los gastos de compañeros de cuarto
-const recalcularGastos = () => {
-  //Nos traemos los datos de los roommates
-  const roommatesJson = JSON.parse(
-    fs.readFileSync("./data/roommates.json", "utf-8")
-  );
-  //Nos traemos los datos de los gastos
-  const gastosJson = JSON.parse(fs.readFileSync("./data/gastos.json", "utf-8"));
+/* const recalcularDeudas = () => {
+ 
 
-  //inicializamos los saldos de cada rommate
-  roommatesJson.roommates.map((roommate) => {
-    roommate.debe = 0;
-    roommate.recibe = 0;
-    roommate.total = 0;
-    return roommate;
+  const roommatesData = fs.readFileSync("data/roommates.json", "utf8");
+  const gastosData = fs.readFileSync("data/gastos.json", "utf8");
+
+  let { roommates } = JSON.parse(roommatesData);
+  const { gastos } = JSON.parse(gastosData);
+
+  // Inicialización de las deudas y créditos de cada roommate
+  roommates.forEach(r => {
+    r.debe = 0;
+    r.recibe = 0;
+    r.total = 0;
   });
 
-  //calculamos los gastos y lo que corresponde a cada persona de cuarto en el momento actual y lo actualizamos  en el archivo roommates.json
-
-  /* gastosJson.gastos.map((gasto) => {
-    const roommate = roommatesJson.roommates.find(
-      (roommate) => roommate.id === gasto.roommate
-    );
-    roommate.debe += gasto.monto;
-    roommate.recibe += gasto.monto;
-    roommate.total += gasto.monto;
-    return roommate;
-  });
-
-  fs.writeFileSync("./data/roommates.json", JSON.stringify(roommatesJson)); */
-
-  roommatesJson.roommates.forEach((roommate) => {
-    let debe = 0;
-    let recibe = 0;
-    let total = 0;
-    gastosJson.gastos.forEach((gasto) => {
-      if (gasto.roommate === roommate.id) {
-        debe += gasto.monto;
-      } else if (gasto.roommate !== roommate.id) {
-        recibe += gasto.monto;
+  // Cálculo de deudas y créditos
+  gastos.forEach(g => {
+    const montoPorPersona = g.monto / roommates.length;
+    roommates.forEach(r => {
+      if (g.roommate === r.nombre) {
+        r.recibe += montoPorPersona * (roommates.length - 1);
+      } else {
+        r.debe -= montoPorPersona;
       }
     });
-    roommate.debe = debe;
-    roommate.recibe = recibe;
-    fs.writeFileSync("./data/roommates.json", JSON.stringify(roommatesJson));
   });
+
+  // Actualización del total de cada roommate
+  roommates.forEach(r => {
+    r.total = r.recibe - r.debe;
+  });
+
+  // Escritura del archivo JSON con los datos actualizados
+  fs.writeFileSync("data/roommates.json", JSON.stringify({ roommates }));
+} */
+
+/* const recalcularDeudas = () => {
+  const roommatesJson = JSON.parse(
+    fs.readFileSync("./data/roommates.json", "utf8")
+  );
+  const gastosJson = JSON.parse(fs.readFileSync("./data/gastos.json", "utf8"));
+
+const roommates = roommatesJson.roommates.map((r) => {
+  r.debe = 0;
+  r.recibe = 0;
+  r.total = 0;
+  return r;
+});
+  
+  const cantidadDeRoommates = roommates.length;
+  
+  gastosJson.gastos.forEach((g) => {
+    const montoPorPersona = g.monto / cantidadDeRoommates;
+    roommates.map((r) => {
+      if (g.roommate === r.nombre) {
+        r.recibe += montoPorPersona * (cantidadDeRoommates - 1);
+      } else {
+        r.debe -= montoPorPersona;
+      }
+      r.total = r.recibe - r.debe;
+    });
+  })
+fs.writeFileSync("./data/roommates.json", JSON.stringify({ roommates }));
+  
+} */
+
+const recalcularDeudas = () => {
+  // Lectura de archivos JSON una sola vez al principio de la función
+  const roommatesData = fs.readFileSync("./data/roommates.json", "utf8");
+  const gastosData = fs.readFileSync("./data/gastos.json", "utf8");
+
+  const { roommates } = JSON.parse(roommatesData);
+  const { gastos } = JSON.parse(gastosData);
+
+  // Inicialización de las deudas y créditos de cada roommate
+  roommates.forEach((r) => {
+    r.debe = 0;
+    r.recibe = 0;
+    r.total = 0;
+  });
+
+  // Cálculo de deudas y créditos
+  gastos.forEach((g) => {
+    const montoPorPersona = g.monto / roommates.length;
+    roommates.forEach((r) => {
+      if (g.roommate === r.nombre) {
+        r.recibe += montoPorPersona * (roommates.length - 1);
+      } else {
+        r.debe -= montoPorPersona;
+      }
+      r.total = r.recibe - r.debe;
+    });
+  });
+
+  // Escritura del archivo JSON con los datos actualizados
+  fs.writeFileSync("./data/roommates.json", JSON.stringify({ roommates }));
 };
 
-export { addRoommateQuery, getRoommatesQuery, recalcularGastos };
+
+
+export { addRoommateQuery, getRoommatesQuery, recalcularDeudas };
